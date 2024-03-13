@@ -71,6 +71,7 @@
   color: white;
   cursor: pointer;
   outline: none;
+  width: 90px;
 }
 
 .message-input button:hover {
