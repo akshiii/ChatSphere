@@ -8,8 +8,8 @@ io.on("connection", (socket) => {
   console.log("New user connected");
   socket.on("new-user", ({ userName, prompt }) => {
     console.log("New user joined", userName, prompt);
+    io.to(prompt).emit("user-joins-chat", { userName });
     socket.join(prompt);
-    io.to(prompt).emit("user-joins-chat");
   });
 
   socket.on("new-msg", ({ message, prompt }) => {

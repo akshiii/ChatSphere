@@ -1,5 +1,7 @@
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import "./css/HomePage.css";
+import { useSocket } from "../providers/SockerProvider";
+import { useNavigate } from "react-router-dom";
 
 const HomePage = () => {
   const topics = [
@@ -15,6 +17,19 @@ const HomePage = () => {
   const [name, setName] = useState("");
   const [topic, setTopic] = useState("");
   const [showDropdown, setShowDropdown] = useState(false);
+  const { socket } = useSocket();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    socket.on("user-joins-chat", handleNewUserJoined);
+    return () => {
+      socket.off("user-joins-chat", handleNewUserJoined);
+    };
+  });
+
+  const handleNewUserJoined = useCallback(({ userName }) => {
+    console.log("Some new user has joined", userName);
+  }, []);
 
   const handleToggleDropdown = () => {
     setShowDropdown(!showDropdown);
@@ -28,7 +43,8 @@ const HomePage = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log("Submitted:", { name, topic });
-    // You can add your logic for form submission here
+    socket.emit("new-user", { userName: name, prompt: topic });
+    navigate(`/chat/${prompt}`, prompt);
   };
 
   return (
